@@ -1,11 +1,5 @@
-/**
- * Mission 3. Escape: DFS from cell 0 to the last cell (rows * cols - 1) in the maze of Mission 1.
- * Two neighbouring cells are connected when the wall between them is broken.
- * The neighbours are tried in this order: up, right, down, left (cell - cols, cell + 1, cell + cols, cell - 1).
- * The ready method Graphs.open(w, broken) gives you the open neighbours of every cell, in no particular order:
- * to visit them in the required order, go through the four cells above one by one and take those that are in the list.
- * The program must not overflow the stack on a maze of 1000 by 1000 cells.
- */
+import java.util.*;
+
 public class Escape {
 
     /**
@@ -16,7 +10,110 @@ public class Escape {
     public record Result(int[] path, int visited, int deadEnds) {}
 
     public static Result escape(Input.Walls w, int[] broken) {
-        // TODO
-        return new Result(new int[0], 0, 0);
+        int n = w.cells();
+        int rows = w.rows();
+        int cols = w.cols();
+        int target = n - 1;
+
+        int[][] open = Graphs.open(w, broken);
+
+        int deadEnds = 0;
+        for (int i = 0; i < n; i++) {
+            if (open[i].length == 1) {
+                deadEnds++;
+            }
+        }
+
+        if (n == 1) {
+            return new Result(new int[]{0}, 1, deadEnds);
+        }
+
+        boolean[] visited = new boolean[n];
+        int[] parent = new int[n];
+        Arrays.fill(parent, -1);
+
+        int[] stack = new int[n];
+        int[] edgeIndex = new int[n];
+        int top = 0;
+
+        stack[0] = 0;
+        edgeIndex[0] = 0;
+        visited[0] = true;
+        int visitedCount = 1;
+        boolean found = false;
+
+        while (top >= 0) {
+            int u = stack[top];
+            if (u == target) {
+                found = true;
+                break;
+            }
+
+            int r = u / cols;
+            int c = u % cols;
+
+            boolean moved = false;
+            while (edgeIndex[top] < 4) {
+                int dir = edgeIndex[top]++;
+                int v = -1;
+                if (dir == 0 && r > 0) {
+                    v = (r - 1) * cols + c; // up
+                } else if (dir == 1 && c < cols - 1) {
+                    v = r * cols + (c + 1); // right
+                } else if (dir == 2 && r < rows - 1) {
+                    v = (r + 1) * cols + c; // down
+                } else if (dir == 3 && c > 0) {
+                    v = r * cols + (c - 1); // left
+                }
+
+                if (v != -1 && !visited[v] && isOpen(open[u], v)) {
+                    visited[v] = true;
+                    visitedCount++;
+                    parent[v] = u;
+                    if (v == target) {
+                        found = true;
+                        break;
+                    }
+                    top++;
+                    stack[top] = v;
+                    edgeIndex[top] = 0;
+                    moved = true;
+                    break;
+                }
+            }
+
+            if (found) {
+                break;
+            }
+
+            if (!moved && edgeIndex[top] >= 4) {
+                top--;
+            }
+        }
+
+        // Reconstruct path from target to 0
+        int pathLen = 0;
+        for (int curr = target; curr != -1; curr = parent[curr]) {
+            pathLen++;
+            if (curr == 0) break;
+        }
+
+        int[] path = new int[pathLen];
+        int curr = target;
+        for (int i = pathLen - 1; i >= 0; i--) {
+            path[i] = curr;
+            curr = parent[curr];
+        }
+
+        return new Result(path, visitedCount, deadEnds);
+    }
+
+    private static boolean isOpen(int[] neighbors, int v) {
+        for (int neighbor : neighbors) {
+            if (neighbor == v) {
+                return true;
+            }
+        }
+        return false;
     }
 }
