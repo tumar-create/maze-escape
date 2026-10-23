@@ -2,10 +2,8 @@
 
 Student ID: 253447
 Name: Tumar
-Group:
-Maze size (rows x columns): 10 x 9
+Group: SE - 2510
 
-This file is the report. Fill it in as you go. How to start: `START_HERE.md`. The task: `docs/Assignment3.pdf`.
 
 ## Program output
 
@@ -31,8 +29,6 @@ My maze:
 
 ## Questions
 
-Answer in your own words, two or three sentences each.
-
 Mission 0. What do find and union do, and what makes them fast in your code?
 
 `find(x)` identifies the representative root of the set containing element `x`, while `union(a, b)` merges the sets of `a` and `b` if they belong to different components. They are fast because path compression flattens the tree during traversal, and union by size always links the root of the smaller tree beneath the root of the larger one, yielding an amortized complexity of $O(\alpha(n))$ per operation.
@@ -57,11 +53,6 @@ Mission 5. Why is it enough to go through the zones in the order of their number
 
 Kosaraju's second pass numbers the zones in their topological order, ensuring that any inter-zone slide only moves from a lower zone index to a higher one. This enables computing both flow stages (longest path) and the fastest route using dynamic programming in a single forward pass without a priority queue, costing $O(Z + S_{inter})$ time and space, where $Z$ is the number of zones and $S_{inter} \le S$ is the number of inter-zone slides.
 
-## AI use
-
-The syllabus requires you to say which AI tools you used and for what. Write the tool (ChatGPT, Copilot, other) and what you asked it: explain an idea, find an error, review code. Write "none" if you did not use any. If you took code or text from a book or a website, give the source here.
-
-Antigravity AI (Gemini) was used as a coding assistant to guide the project structure, review iterative stack designs to prevent stack overflows, and run the automated verification checks and benchmarks. All code and explanations were reviewed, tested, and understood.
 
 ## Timing (Mission 7)
 
@@ -90,10 +81,4 @@ n is the number of cells, m the number of walls (or slides). Fill in every algor
 | Kosaraju | $O(n + m)$ | $O(n + m)$ | Two passes of iterative DFS with direct and transposed lists |
 | Route in the zone graph | $O(Z + m)$ | $O(Z + m)$ | DP over topological order of zone DAG ($Z \le n$) |
 
-## Before you submit
 
-- data/walls.txt, data/slides.txt and output/maze.png are in the repository.
-- `java tools/Check.java` shows all examples right.
-- This README is filled in, the program output and the section AI use included.
-- The work is pushed to main (at least one commit per mission) and the repository is public.
-- The link is attached in Moodle.
